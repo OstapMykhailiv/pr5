@@ -1,0 +1,66 @@
+.content-wrap{
+    text-align: center;
+    width: 300px;
+
+}
+.input-wrapper{
+    border:1px solid black;
+    padding: 10px;
+}
+#task{
+    width: 250px;
+}
+.todo-element {
+    border: 1px solid black;
+    border-top: transparent;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.checkbox-div{
+    min-width: 20px;
+    min-height: 15px;
+}
+
+.txt{
+    text-align: left;
+    min-width: 200px;
+    max-width: 200px;
+    word-wrap: anywhere;
+}
+
+.todo-element .right-wrapper button {
+    display: flex;
+    align-self: flex-end;
+    margin-bottom: 5px;
+    color: red;
+    background: white;
+    width: 25px;
+    height: 20px;
+}
+.todo-element button:hover {
+    background: lightgrey;
+}
+
+.date-div{
+    display: flex;
+    min-width: 30px;
+    font-size: 9px;
+    color: grey;
+    text-align: right;
+}
+
+.y-n-wrapper{
+    display: flex;
+}
+
+#button-wrap{
+    margin: 5px 0 0 0;
+}
+
+.right-wrapper{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
