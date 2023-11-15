@@ -2,11 +2,11 @@ const addTask = document.getElementById('task');
 const tasks = document.getElementById('tasks')
 const sort1 = document.getElementById('sort1')
 const sort2 = document.getElementById('sort2')
+const tasksArray = JSON.parse(localStorage.getItem('tasks'));
 
 document.addEventListener('DOMContentLoaded', ()=>{
     let savedTasks = localStorage.getItem('tasks');
     if (savedTasks) {
-        let tasksArray = JSON.parse(savedTasks);
         for (let i = 0; i<tasksArray.length; i++){
             displayTask(tasksArray[i], i);
         }
@@ -22,28 +22,41 @@ document.addEventListener("keypress", function (event) {
             completed: false,
             date: new Date().toLocaleString(),
         };
-
-        saveTask(newTask);
-        displayTask(newTask);
+        saveTask(newTask, tasksArray.length);
+        displayTask(newTask, tasksArray.length-1);
         addTask.value = '';
     }
 });
 
 function saveTask(thisTask, index) {
-    let existingTasks = localStorage.getItem('tasks') || '[]';
-    let tasksArray = JSON.parse(existingTasks);
-
     if (index !== undefined && index >= 0 && index < tasksArray.length) {
         tasksArray[index] = thisTask;
-    } else {
-        thisTask.completed = false;
+    } else if (index > tasksArray.length-1) {
         tasksArray.push(thisTask);
     }
 
     localStorage.setItem('tasks', JSON.stringify(tasksArray));
 }
 
+
+
 function displayTask(thisTask, index){
+    let button = document.createElement('button')
+    button.textContent = 'X'
+    button.addEventListener("click", () => {
+        if (confirm("Ви впевнені, що хочете видалити цей елемент?")) {
+            div.remove();
+            tasksArray.splice(index, 1);
+            while (tasks.firstChild) {
+                tasks.firstChild.remove();
+            }
+            tasksArray.forEach((task, index) => {
+                displayTask(task, index);
+            });
+            localStorage.setItem('tasks', JSON.stringify(tasksArray));
+        }
+    });
+
     let div = document.createElement('div')
     div.className = 'todo-element'
 
@@ -69,18 +82,9 @@ function displayTask(thisTask, index){
         txt.removeEventListener('dblclick', changeTask)
         div.style.background = 'grey'
         dateDiv.style.color = 'black'
+        saveTask(thisTask, index)
     }
 
-    let button = document.createElement('button')
-    button.textContent = 'X'
-    button.addEventListener("click", () => {
-        if (confirm("Ви впевнені, що хочете видалити цей елемент?")){
-            div.remove()
-            let tasksArray = JSON.parse(localStorage.getItem('tasks'));
-            tasksArray.splice(index, 1)
-            localStorage.setItem('tasks', JSON.stringify(tasksArray));
-        }
-    })
 
     let rightWrapper = document.createElement('div')
     rightWrapper.append(button, dateDiv)
@@ -97,8 +101,6 @@ function displayTask(thisTask, index){
         txt.removeEventListener('dblclick', changeTask)
         saveTask(thisTask, index)
     })
-
-
     function changeTask() {
         checkbox.style.display = 'none'
         let inputFiled = document.createElement('input');
@@ -144,41 +146,38 @@ function displayTask(thisTask, index){
 
 // сортування за зроблене/не зроблене
 sort1.addEventListener('click', ()=>{
-    let tasksArray = JSON.parse(localStorage.getItem('tasks'))
     tasksArray.sort((a, b) => {
         if (a.completed && !b.completed) {
-            return 1;
+            return -1;
         }
         if (!a.completed && b.completed) {
-            return -1;
+            return 1;
         }
         return 0;
     });
+    localStorage.clear()
     localStorage.setItem('tasks', JSON.stringify(tasksArray))
 
-    let tasksContainer = document.getElementById('tasks');
-    while (tasksContainer.firstChild) {
-        tasksContainer.firstChild.remove();
+    while (tasks.firstChild) {
+        tasks.firstChild.remove();
     }
 
     tasksArray.forEach((task, index) => {
-        displayTask(task, index, tasksContainer);
+        displayTask(task, index);
     });
 })
 
 // сортування за датою
 sort2.addEventListener('click', ()=>{
-    let tasksArray = JSON.parse(localStorage.getItem('tasks'))
     tasksArray.sort((a, b) => parseCustomDate(a.date).getTime() - parseCustomDate(b.date).getTime());
     localStorage.setItem('tasks', JSON.stringify(tasksArray))
 
-    let tasksContainer = document.getElementById('tasks');
-    while (tasksContainer.firstChild) {
-        tasksContainer.firstChild.remove();
+    while (tasks.firstChild) {
+        tasks.firstChild.remove();
     }
 
     tasksArray.forEach((task, index) => {
-        displayTask(task, index, tasksContainer);
+        displayTask(task, index);
     });
 })
 function check() {
@@ -186,7 +185,9 @@ function check() {
         alert('Поле пусте')
         return 0
     }
-    let tasksArray = JSON.parse(localStorage.getItem('tasks'))
+    if (tasksArray===null){
+        return 1
+    }
     for (let i = 0; i<tasksArray.length; i++){
         if (addTask.value === tasksArray[i].text){
             alert('Даний елемент вже існує у списку')
@@ -199,7 +200,6 @@ function checkOnChange(textToChange, index){
         alert('Поле пусте')
         return 0
     }
-    let tasksArray = JSON.parse(localStorage.getItem('tasks'))
     for (let i = 0; i<tasksArray.length; i++){
         if (textToChange === tasksArray[i].text && index !== i){
             alert('Даний елемент вже існує у списку')
