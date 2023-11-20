@@ -2,7 +2,7 @@ const addTask = document.getElementById('task');
 const tasks = document.getElementById('tasks')
 const sort1 = document.getElementById('sort1')
 const sort2 = document.getElementById('sort2')
-const tasksArray = JSON.parse(localStorage.getItem('tasks'));
+const tasksArray = JSON.parse(localStorage.getItem('tasks')) || [];
 
 document.addEventListener('DOMContentLoaded', ()=>{
     let savedTasks = localStorage.getItem('tasks');
